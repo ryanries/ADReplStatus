@@ -6,6 +6,8 @@ Joseph Ryan Ries - 2023
 
 **This project is NOT supported or endorsed by Microsoft. I work for Microsoft, but this is a personal project.**
 
+**This tool is still very early in development. Right now I need beta testers to report bugs, submit feature requests, and send me screenshots of ADREPLSTATUS that I can post here in this README to spruce up the page.**
+
 I am rebuilding the AD Replication Status Tool. Here are my reasons:
 
 - The old version of the tool had a time bomb in it - an expiring SSL certificate - that rendered the app
@@ -29,5 +31,3 @@ Here are some screenshots of what the tool looks like currently:
 
 ![screenshot2](https://user-images.githubusercontent.com/29166333/212477765-3e4b714d-2ae0-4c78-b73e-cf13671f8eb5.png)
 
-
-Right now I need beta testers to report bugs, submit feature requests, and send me screenshots of ADREPLSTATUS that I can post here in this README to spruce up the page.
