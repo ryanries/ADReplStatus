@@ -16,9 +16,7 @@ I am rebuilding the AD Replication Status Tool. Here are my reasons:
 - The old version of the tool had a time bomb in it - an expiring SSL certificate - that rendered the app
 unusable sometime around September 2022. Only through great effort internally were we able to periodically renew
 this certificate and republish the app, and the app was architected in such a way that excising the signing 
-certificate check was more work than just rewriting the whole thing. Furthermore, the app wouldn't even launch
-on my Win11 or Server 2022 systems. It would just silently crash and log an event to the Windows event log. I felt 
-this was a pretty unprofessional state to leave it in.
+certificate check was more work than just rewriting the whole thing. (I know about the Sirona DLL hack, but still.)
 
 - The old tool had no active maintainers and no one who was still around was familiar with the app's internals or source code.
 
