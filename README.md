@@ -4,6 +4,9 @@ Active Directory Replication Status Tool, aka ADREPLSTATUS
 
 Joseph Ryan Ries - 2023
 
+<img alt="GitHub all releases" src="https://img.shields.io/github/downloads/ryanries/ADReplStatus/total">
+
+
 **This project is NOT supported or endorsed by Microsoft. I work for Microsoft, but this is a personal project.**
 
 **This tool is still very early in development. Right now I need beta testers to report bugs, submit feature requests, and send me screenshots of ADREPLSTATUS that I can post here in this README to spruce up the page.**
