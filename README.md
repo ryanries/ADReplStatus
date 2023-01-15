@@ -32,6 +32,8 @@ Here are some screenshots of what the tool looks like currently:
 
 ![screenshot2](https://user-images.githubusercontent.com/29166333/212477765-3e4b714d-2ae0-4c78-b73e-cf13671f8eb5.png)
 
+![screenshot3](screenshot01.png)
+
 This project currently targets .NET Framework 4.8.
 
 This project uses ObjectListView.Official 2.9.1 by Phillip Piper. This can be installed as a NuGet package directly from within
