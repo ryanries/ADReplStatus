@@ -102,11 +102,13 @@
             this.Controls.Add(this.AlternateCredsLabel);
             this.Controls.Add(this.AlternateCredsButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AlternateCredsForm";
             this.ShowInTaskbar = false;
             this.Text = "Provide Alternate Credentials";
+            this.Load += new System.EventHandler(this.AlternateCredsForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -35,7 +35,6 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.EnableLoggingButton = new System.Windows.Forms.Button();
             this.SetForestButton = new System.Windows.Forms.Button();
-            this.ProgressPictureBox = new System.Windows.Forms.PictureBox();
             this.AlternateCredsButton = new System.Windows.Forms.Button();
             this.ProgressPercentLabel = new System.Windows.Forms.Label();
             this.treeListView1 = new BrightIdeasSoftware.TreeListView();
@@ -52,12 +51,13 @@
             this.LastSyncResultColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.LastSyncMessageColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.ErrorsOnlyButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.ProgressPictureBox)).BeginInit();
+            this.DarkModeButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.treeListView1)).BeginInit();
             this.SuspendLayout();
             // 
             // RefreshButton
             // 
+            this.RefreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.RefreshButton.Image = ((System.Drawing.Image)(resources.GetObject("RefreshButton.Image")));
             this.RefreshButton.Location = new System.Drawing.Point(12, 12);
             this.RefreshButton.Name = "RefreshButton";
@@ -75,8 +75,9 @@
             // 
             // EnableLoggingButton
             // 
+            this.EnableLoggingButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.EnableLoggingButton.Image = ((System.Drawing.Image)(resources.GetObject("EnableLoggingButton.Image")));
-            this.EnableLoggingButton.Location = new System.Drawing.Point(292, 12);
+            this.EnableLoggingButton.Location = new System.Drawing.Point(348, 12);
             this.EnableLoggingButton.Name = "EnableLoggingButton";
             this.EnableLoggingButton.Size = new System.Drawing.Size(50, 50);
             this.EnableLoggingButton.TabIndex = 3;
@@ -85,6 +86,7 @@
             // 
             // SetForestButton
             // 
+            this.SetForestButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.SetForestButton.Image = ((System.Drawing.Image)(resources.GetObject("SetForestButton.Image")));
             this.SetForestButton.Location = new System.Drawing.Point(124, 12);
             this.SetForestButton.Name = "SetForestButton";
@@ -93,19 +95,9 @@
             this.SetForestButton.UseVisualStyleBackColor = true;
             this.SetForestButton.Click += new System.EventHandler(this.SetForestButton_Click);
             // 
-            // ProgressPictureBox
-            // 
-            this.ProgressPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("ProgressPictureBox.Image")));
-            this.ProgressPictureBox.Location = new System.Drawing.Point(72, 22);
-            this.ProgressPictureBox.Name = "ProgressPictureBox";
-            this.ProgressPictureBox.Size = new System.Drawing.Size(40, 40);
-            this.ProgressPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.ProgressPictureBox.TabIndex = 5;
-            this.ProgressPictureBox.TabStop = false;
-            this.ProgressPictureBox.Visible = false;
-            // 
             // AlternateCredsButton
             // 
+            this.AlternateCredsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.AlternateCredsButton.Image = ((System.Drawing.Image)(resources.GetObject("AlternateCredsButton.Image")));
             this.AlternateCredsButton.Location = new System.Drawing.Point(180, 12);
             this.AlternateCredsButton.Name = "AlternateCredsButton";
@@ -116,9 +108,10 @@
             // 
             // ProgressPercentLabel
             // 
-            this.ProgressPercentLabel.Location = new System.Drawing.Point(71, 9);
+            this.ProgressPercentLabel.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProgressPercentLabel.Location = new System.Drawing.Point(68, 12);
             this.ProgressPercentLabel.Name = "ProgressPercentLabel";
-            this.ProgressPercentLabel.Size = new System.Drawing.Size(42, 12);
+            this.ProgressPercentLabel.Size = new System.Drawing.Size(50, 50);
             this.ProgressPercentLabel.TabIndex = 8;
             this.ProgressPercentLabel.Text = "0%";
             this.ProgressPercentLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -224,10 +217,12 @@
             // LastSyncMessageColumn
             // 
             this.LastSyncMessageColumn.AspectName = "LastSyncMessage";
+            this.LastSyncMessageColumn.FillsFreeSpace = true;
             this.LastSyncMessageColumn.Text = "Last Sync Message";
             // 
             // ErrorsOnlyButton
             // 
+            this.ErrorsOnlyButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ErrorsOnlyButton.Image = ((System.Drawing.Image)(resources.GetObject("ErrorsOnlyButton.Image")));
             this.ErrorsOnlyButton.Location = new System.Drawing.Point(236, 12);
             this.ErrorsOnlyButton.Name = "ErrorsOnlyButton";
@@ -236,16 +231,27 @@
             this.ErrorsOnlyButton.UseVisualStyleBackColor = true;
             this.ErrorsOnlyButton.Click += new System.EventHandler(this.ErrorsOnlyButton_Click);
             // 
+            // DarkModeButton
+            // 
+            this.DarkModeButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.DarkModeButton.Image = ((System.Drawing.Image)(resources.GetObject("DarkModeButton.Image")));
+            this.DarkModeButton.Location = new System.Drawing.Point(292, 12);
+            this.DarkModeButton.Name = "DarkModeButton";
+            this.DarkModeButton.Size = new System.Drawing.Size(50, 50);
+            this.DarkModeButton.TabIndex = 11;
+            this.DarkModeButton.UseVisualStyleBackColor = true;
+            this.DarkModeButton.Click += new System.EventHandler(this.DarkModeButton_Click);
+            // 
             // ADReplStatusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 461);
+            this.Controls.Add(this.DarkModeButton);
             this.Controls.Add(this.ErrorsOnlyButton);
             this.Controls.Add(this.treeListView1);
             this.Controls.Add(this.ProgressPercentLabel);
             this.Controls.Add(this.AlternateCredsButton);
-            this.Controls.Add(this.ProgressPictureBox);
             this.Controls.Add(this.SetForestButton);
             this.Controls.Add(this.EnableLoggingButton);
             this.Controls.Add(this.RefreshButton);
@@ -255,7 +261,6 @@
             this.Text = "AD Replication Status Tool";
             this.Load += new System.EventHandler(this.ADReplStatusForm_Load);
             this.Resize += new System.EventHandler(this.ADReplStatusForm_Resize);
-            ((System.ComponentModel.ISupportInitialize)(this.ProgressPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.treeListView1)).EndInit();
             this.ResumeLayout(false);
 
@@ -268,7 +273,6 @@
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button EnableLoggingButton;
         private System.Windows.Forms.Button SetForestButton;
-        private System.Windows.Forms.PictureBox ProgressPictureBox;
         private System.Windows.Forms.Button AlternateCredsButton;
         private System.Windows.Forms.Label ProgressPercentLabel;
         private BrightIdeasSoftware.TreeListView treeListView1;
@@ -285,6 +289,7 @@
         private BrightIdeasSoftware.OLVColumn LastSyncResultColumn;
         private BrightIdeasSoftware.OLVColumn LastSyncMessageColumn;
         private System.Windows.Forms.Button ErrorsOnlyButton;
+        private System.Windows.Forms.Button DarkModeButton;
     }
 }
 

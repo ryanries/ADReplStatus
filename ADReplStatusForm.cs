@@ -18,6 +18,8 @@ namespace ADReplStatus
     {
         public static bool gLoggingEnabled = false;
 
+        public static bool gDarkMode = false;
+
         public static bool gErrorsOnly = false;
 
         public static string gLogfileName = string.Empty;
@@ -44,18 +46,15 @@ namespace ADReplStatus
             ActiveForm.Text = $"AD Replication Status Tool - {gForestName}";
 
             gDCs.Clear();
+            
 
-            RefreshButton.Enabled = false;
-
-            SetForestButton.Enabled = false;
-
-            EnableLoggingButton.Enabled = false;
-
-            AlternateCredsButton.Enabled = false;
-
-            ErrorsOnlyButton.Enabled = false;
-
-            ProgressPictureBox.Visible = true;            
+            foreach (var control in this.Controls)
+            {
+                if (control is Button)
+                {
+                    ((Button)control).Enabled = false;
+                }
+            }
 
             backgroundWorker1.RunWorkerAsync();
         }
@@ -74,19 +73,30 @@ namespace ADReplStatus
 
             try
             {
-                var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\ADREPLSTATUS", false);
-
-                if (key != null)
+                using (var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\ADREPLSTATUS", false))
                 {
-                    gForestName = key.GetValue("ForestName", string.Empty).ToString();
-
-                    key.Dispose();
+                    if (key != null)
+                    {
+                        gForestName = key.GetValue("ForestName", string.Empty).ToString();
+                        
+                        gDarkMode = Convert.ToBoolean(key.GetValue("DarkMode", false));
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show($"An error occured while trying to read app settings from the registry!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            if (gDarkMode == true)
+            {
+                SetDarkMode();                
+            }
+            else
+            {
+                SetLightMode();
+            }
+
 
             if (string.IsNullOrEmpty(gForestName))
             {
@@ -166,9 +176,9 @@ namespace ADReplStatus
                 DomainControllerCollection DCs = domain.DomainControllers;                
 
                 foreach (DomainController dc in DCs)
-                {
+                {                    
                     ADREPLDC adrepldc = new ADREPLDC();
-
+                    
                     adrepldc.Name = dc.Name;
 
                     adrepldc.DomainName = domain.Name;
@@ -205,6 +215,8 @@ namespace ADReplStatus
                         {
                             using (DirectorySearcher search = new DirectorySearcher(directoryEntry))
                             {
+                                search.ClientTimeout = new TimeSpan(0, 0, 20);
+
                                 search.Filter = $"(samaccountname={dc.Name.Split('.')[0]}$)";
 
                                 search.PropertiesToLoad.Add("msDS-isRODC");
@@ -278,19 +290,15 @@ namespace ADReplStatus
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            ProgressPercentLabel.Visible = false;
+            ProgressPercentLabel.Visible = false;            
 
-            RefreshButton.Enabled = true;
-
-            SetForestButton.Enabled = true;
-
-            EnableLoggingButton.Enabled = true;
-
-            AlternateCredsButton.Enabled = true;
-
-            ErrorsOnlyButton.Enabled = true;
-
-            ProgressPictureBox.Visible = false;            
+            foreach (var control in this.Controls)
+            {
+                if (control is Button)
+                {
+                    ((Button)control).Enabled = true;
+                }
+            }
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -330,7 +338,14 @@ namespace ADReplStatus
             {
                 toolTip1.SetToolTip(EnableLoggingButton, "Enable Logging");
 
-                EnableLoggingButton.BackColor = SystemColors.Control;
+                if (gDarkMode == true)
+                {
+                    EnableLoggingButton.BackColor = Color.FromArgb(32, 32, 32);
+                }
+                else
+                {
+                    EnableLoggingButton.BackColor = SystemColors.Control;
+                }
 
                 System.IO.File.AppendAllText(gLogfileName, $"[{DateTime.Now}] Logging disabled.\n");
             }
@@ -376,6 +391,13 @@ namespace ADReplStatus
 
                     e.Item.ForeColor = Color.White;
                 }
+                else
+                {
+                    if (gDarkMode == true)
+                    {
+                        e.Item.ForeColor = Color.White;
+                    }                    
+                }
             }
             else if (e.Model is ReplicationNeighbor)
             {
@@ -386,6 +408,13 @@ namespace ADReplStatus
                     e.Item.BackColor = Color.Red;
 
                     e.Item.ForeColor = Color.White;
+                }
+                else
+                {
+                    if (gDarkMode == true)
+                    {
+                        e.Item.ForeColor = Color.White;
+                    }
                 }
             }
         }
@@ -399,6 +428,8 @@ namespace ADReplStatus
                 toolTip1.SetToolTip(ErrorsOnlyButton, "Show Everything");
 
                 ErrorsOnlyButton.BackColor = SystemColors.ControlDark;
+
+                treeListView1.ExpandAll();
 
                 treeListView1.ModelFilter = new ModelFilter(delegate (object x) 
                 {
@@ -418,9 +449,150 @@ namespace ADReplStatus
             {
                 toolTip1.SetToolTip(ErrorsOnlyButton, "Show Errors Only");
 
-                ErrorsOnlyButton.BackColor = SystemColors.Control;
+                if (gDarkMode == true)
+                {
+                    ErrorsOnlyButton.BackColor = Color.FromArgb(32, 32, 32);
+                }
+                else
+                {
+                    ErrorsOnlyButton.BackColor = SystemColors.Control;
+                }
 
                 treeListView1.ModelFilter = null;
+            }
+        }
+
+        private void DarkModeButton_Click(object sender, EventArgs e)
+        {
+            gDarkMode = !gDarkMode;
+
+            if (gDarkMode == true)
+            {
+                SetDarkMode();              
+            }
+            else
+            {
+                SetLightMode();
+            }
+
+            try
+            {
+                var key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\ADREPLSTATUS", true);
+
+                if (key != null)
+                {
+                    if (gDarkMode == true)
+                    {
+                        key.SetValue("DarkMode", 1);
+                    }
+                    else
+                    {
+                        key.SetValue("DarkMode", 0);
+                    }
+
+                    key.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"ERROR: Failed to write to the HKCU\\ADREPLSTATUS registry key!\n{ex.Message}\n";
+
+                MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                if (gLoggingEnabled)
+                {
+                    System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}\n");
+                }
+            }
+        }
+
+        void SetDarkMode()
+        {
+            toolTip1.SetToolTip(DarkModeButton, "Light Mode");
+
+            this.BackColor = Color.FromArgb(32, 32, 32);
+
+            foreach (var control in this.Controls)
+            {
+                if (control is Button)
+                {
+                    ((Button)control).BackColor = Color.FromArgb(32, 32, 32);
+                }                
+
+                if (control is Label)
+                {
+                    ((Label)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                    ((Label)control).ForeColor = Color.White;
+                }
+            }
+
+            if (gLoggingEnabled == true)
+            {
+                EnableLoggingButton.BackColor = SystemColors.ControlDark;
+            }
+
+            if (gErrorsOnly == true)
+            {
+                ErrorsOnlyButton.BackColor = SystemColors.ControlDark;
+            }
+
+            treeListView1.BackColor = Color.FromArgb(32, 32, 32);
+
+            foreach (OLVColumn item in treeListView1.Columns)
+            {
+                var headerstyle = new HeaderFormatStyle();
+
+                headerstyle.SetBackColor(Color.FromArgb(32, 32, 32));
+
+                headerstyle.SetForeColor(Color.White);
+
+                item.HeaderFormatStyle = headerstyle;
+            }
+        }
+
+        void SetLightMode()
+        {
+            toolTip1.SetToolTip(DarkModeButton, "Dark Mode");
+
+            this.BackColor = SystemColors.Control;
+
+            foreach (var control in this.Controls)
+            {
+                if (control is Button)
+                {
+                    ((Button)control).BackColor = SystemColors.Control;
+                }
+
+                if (control is Label)
+                {
+                    ((Label)(control)).BackColor = SystemColors.Control;
+
+                    ((Label)control).ForeColor = SystemColors.ControlText;
+                }
+            }
+
+            if (gLoggingEnabled == true)
+            {
+                EnableLoggingButton.BackColor = SystemColors.ControlDark;
+            }
+
+            if (gErrorsOnly == true)
+            {
+                ErrorsOnlyButton.BackColor = SystemColors.ControlDark;
+            }
+
+            treeListView1.BackColor = SystemColors.Window;
+
+            foreach (OLVColumn item in treeListView1.Columns)
+            {
+                var headerstyle = new HeaderFormatStyle();
+
+                headerstyle.SetBackColor(SystemColors.Window);
+
+                headerstyle.SetForeColor(SystemColors.ControlText);
+
+                item.HeaderFormatStyle = headerstyle;
             }
         }
     }

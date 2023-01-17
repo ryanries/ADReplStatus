@@ -33,5 +33,35 @@ namespace ADReplStatus
                 }
             }
         }
+
+        private void AlternateCredsForm_Load(object sender, EventArgs e)
+        {
+            if (ADReplStatusForm.gDarkMode == true)
+            {
+                this.BackColor = Color.FromArgb(32, 32, 32);
+
+                foreach (var control in this.Controls)
+                {
+                    if (control is Label)
+                    {
+                        ((Label)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((Label)control).ForeColor = Color.White;
+                    }
+                    else if (control is TextBox)
+                    {
+                        ((TextBox)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((TextBox)control).ForeColor = Color.White;
+                    }
+                    else if (control is Button)
+                    {
+                        ((Button)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((Button)control).ForeColor = Color.White;
+                    }
+                }
+            }
+        }
     }
 }
