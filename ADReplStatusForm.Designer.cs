@@ -163,62 +163,75 @@
             this.DCNameColumn.AspectName = "Name";
             this.DCNameColumn.Groupable = false;
             this.DCNameColumn.Text = "DC Name";
+            this.DCNameColumn.Width = 75;
             // 
             // DomainNameColumn
             // 
             this.DomainNameColumn.AspectName = "DomainName";
             this.DomainNameColumn.Text = "Domain";
+            this.DomainNameColumn.Width = 75;
             // 
             // SiteColumn
             // 
             this.SiteColumn.AspectName = "Site";
             this.SiteColumn.Text = "Site";
+            this.SiteColumn.Width = 75;
             // 
             // DiscoveryIssuesColumn
             // 
             this.DiscoveryIssuesColumn.AspectName = "DiscoveryIssues";
             this.DiscoveryIssuesColumn.Text = "Discovery Issues";
+            this.DiscoveryIssuesColumn.Width = 100;
             // 
             // IsGCColumn
             // 
             this.IsGCColumn.AspectName = "IsGC";
             this.IsGCColumn.Text = "Is GC";
+            this.IsGCColumn.Width = 75;
             // 
             // IsRODCColumn
             // 
             this.IsRODCColumn.AspectName = "IsRODC";
+            this.IsRODCColumn.MinimumWidth = 75;
             this.IsRODCColumn.Text = "Is RODC";
+            this.IsRODCColumn.Width = 75;
             // 
             // SourceServerColumn
             // 
             this.SourceServerColumn.AspectName = "SourceServer";
             this.SourceServerColumn.Text = "Source DC";
+            this.SourceServerColumn.Width = 75;
             // 
             // PartitionNameColumn
             // 
             this.PartitionNameColumn.AspectName = "PartitionName";
             this.PartitionNameColumn.Text = "Partition";
+            this.PartitionNameColumn.Width = 75;
             // 
             // ConsecutiveFailureCountColumn
             // 
             this.ConsecutiveFailureCountColumn.AspectName = "ConsecutiveFailureCount";
             this.ConsecutiveFailureCountColumn.Text = "Consecutive Failures";
+            this.ConsecutiveFailureCountColumn.Width = 120;
             // 
             // LastSuccessfulSyncColumn
             // 
             this.LastSuccessfulSyncColumn.AspectName = "LastSuccessfulSync";
             this.LastSuccessfulSyncColumn.Text = "Last Successful Sync";
+            this.LastSuccessfulSyncColumn.Width = 120;
             // 
             // LastSyncResultColumn
             // 
             this.LastSyncResultColumn.AspectName = "LastSyncResult";
             this.LastSyncResultColumn.Text = "Last Sync Result";
+            this.LastSyncResultColumn.Width = 120;
             // 
             // LastSyncMessageColumn
             // 
             this.LastSyncMessageColumn.AspectName = "LastSyncMessage";
             this.LastSyncMessageColumn.FillsFreeSpace = true;
             this.LastSyncMessageColumn.Text = "Last Sync Message";
+            this.LastSyncMessageColumn.Width = 120;
             // 
             // ErrorsOnlyButton
             // 
