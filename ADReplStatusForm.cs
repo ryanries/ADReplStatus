@@ -5,12 +5,18 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
 using Microsoft.Win32;
 using BrightIdeasSoftware;
+
+using System.Net.NetworkInformation;
+using System.IO;
+using System.Reflection;
+using System.Threading;
 
 namespace ADReplStatus
 {
@@ -28,7 +34,9 @@ namespace ADReplStatus
 
         public static string gUsername = string.Empty;
 
-        public static string gPassword = string.Empty;        
+        public static string gPassword = string.Empty;
+
+        public static string gTarget = string.Empty;
 
         public static List<ADREPLDC> gDCs = new List<ADREPLDC>();
         
@@ -462,6 +470,162 @@ namespace ADReplStatus
             }
         }
 
+        private void DCNameColumn_RightClick(object sender, CellRightClickEventArgs e)
+        {
+            try
+            {
+                //Only display the menu in the context of the "DC Name" column
+                if (e.Column.Text == "DC Name")
+                {
+                    //Only display the menu if the cell is populated
+                    if (this.treeListView1.SelectedItem.Text != "")
+                    {
+                        //Create the menustrip
+                        ContextMenuStrip diagnosticMenu = new ContextMenuStrip();
+
+                        //Add menuItem click handler
+                        diagnosticMenu.ItemClicked += new ToolStripItemClickedEventHandler(diagnosticMenuSelector);
+
+                        //Create a List view of all the diagnostics we want to add
+                        ObjectListView olv = e.ListView;
+
+                        //Add the "Ping" option
+                        ToolStripMenuItem pingMenuItem = new ToolStripMenuItem(String.Format($"Ping"));
+                        diagnosticMenu.Items.Add(pingMenuItem);
+
+                        //Add the "RDP" option
+                        ToolStripMenuItem rdpMenuItem = new ToolStripMenuItem(String.Format($"Initiate RDP connection"));
+                        diagnosticMenu.Items.Add(rdpMenuItem);
+
+                        //Add the "Enter-PSSession" option
+                        ToolStripMenuItem enterPSSessionMenuItem = new ToolStripMenuItem(String.Format($"Enter PowerShell session"));
+                        diagnosticMenu.Items.Add(enterPSSessionMenuItem);
+
+                        //Add the "Port Tester" option
+                        ToolStripMenuItem portTesterMenuItem = new ToolStripMenuItem(String.Format($"Port Tester"));
+                        diagnosticMenu.Items.Add(portTesterMenuItem);
+
+                        //Actually attach the menu to the cell
+                        e.MenuStrip = diagnosticMenu;
+                    }
+                }
+            }
+            catch
+            {
+                //Do nothing, the user simply right-clicked somewhere else, this is the handler ONLY when the selected column is "DC name"
+            }
+        }
+
+        private void diagnosticMenuSelector(object sender, ToolStripItemClickedEventArgs e)
+        {
+            switch(e.ClickedItem.ToString())
+            {
+                case "Ping":
+                    diagnosticPing(sender, e);
+                    break;
+                case "Initiate RDP connection":
+                    diagnosticRdp(sender,e);
+                    break;
+                case "Enter PowerShell session":
+                    diagnosticPSSession(sender, e);
+                    break;
+                case "Port Tester":
+                    diagnosticNetworkTester(sender, e);
+                    break;
+            }
+        }
+
+        private void diagnosticPing(object sender, ToolStripItemClickedEventArgs e)
+        {
+            string destination = this.treeListView1.SelectedItem.Text;
+            
+            if(destination != "")
+            {
+                try
+                {
+                    Ping p = new Ping();
+                    PingReply r;
+                    r = p.Send(destination);
+                    if (gLoggingEnabled)
+                    {
+                        System.IO.File.AppendAllText(gLogfileName, $"[{DateTime.Now}] Ping to {this.treeListView1.SelectedItem.Text}\nIPAddress:{r.Address.ToString()} is successful!\n");
+                    }
+
+                    string successMessage = $"Success:\nDCName: {this.treeListView1.SelectedItem.Text}\nIPAddress: {r.Address.ToString()}\nProtocol: ICMP";
+
+                    new Thread(() => System.Windows.Forms.MessageBox.Show(successMessage, "Ping Successful", MessageBoxButtons.OK, MessageBoxIcon.Information)).Start();
+                }
+                catch (Exception ex)
+                {
+                    string errorMessage = $"ERROR: Ping to {this.treeListView1.SelectedItem.Text} failed!\n{ex.Message}\n";
+
+                    new Thread(() => System.Windows.Forms.MessageBox.Show(errorMessage, "Ping Successful", MessageBoxButtons.OK, MessageBoxIcon.Information)).Start();
+
+                    if (gLoggingEnabled)
+                    {
+                        System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}\n");
+                    }
+                }
+            }
+        }
+
+        private void diagnosticRdp(object sender, ToolStripItemClickedEventArgs e)
+        {
+            try
+            {
+                string args = $"/v {this.treeListView1.SelectedItem.Text}";
+                Process.Start($"mstsc.exe", args);
+            }
+            catch (Exception ex) 
+            {
+                string errorMessage = $"ERROR: RDP to {this.treeListView1.SelectedItem.Text} failed!\n{ex.Message}\n";
+
+                new Thread(() => MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error));
+
+                if (gLoggingEnabled)
+                {
+                    System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}\n");
+                }
+            }
+        }
+
+        private void diagnosticPSSession(object sender, ToolStripItemClickedEventArgs e)
+        {
+            
+            try
+            {
+                string powershellArgs = $"-NoExit $Cred = Get-Credential;Enter-PSSession -ComputerName {this.treeListView1.SelectedItem.Text} -Credential $Cred";
+                Process.Start($"powershell.exe", powershellArgs);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"ERROR: Enter-PsSession -ComputerName {this.treeListView1.SelectedItem.Text} failed!\n{ex.Message}\n";
+
+                new Thread(() => MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error));
+
+                if (gLoggingEnabled)
+                {
+                    System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}\n");
+                }
+            }
+        }
+
+        private void diagnosticNetworkTester(object sender, ToolStripItemClickedEventArgs e)
+        {
+            gTarget = this.treeListView1.SelectedItem.Text;
+
+            PortTester protocolTesterForm = new PortTester();
+
+            if (gLoggingEnabled)
+            {
+                System.IO.File.AppendAllText(gLogfileName, $"[{DateTime.Now}] Port Tester button was clicked.\n");
+            }
+
+            protocolTesterForm.ShowDialog();
+
+            protocolTesterForm.Dispose();
+        }
+
         private void DarkModeButton_Click(object sender, EventArgs e)
         {
             gDarkMode = !gDarkMode;
@@ -497,7 +661,7 @@ namespace ADReplStatus
             {
                 string errorMessage = $"ERROR: Failed to write to the HKCU\\ADREPLSTATUS registry key!\n{ex.Message}\n";
 
-                MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                new Thread(() => MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error));
 
                 if (gLoggingEnabled)
                 {
