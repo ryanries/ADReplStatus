@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -221,6 +222,54 @@ namespace ADReplStatus
                 catch(Exception ex)
                 {
                     MessageBox.Show($"{ex.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+        }
+
+        private void PortTester_Load(object sender, EventArgs e)
+        {
+            if (ADReplStatusForm.gDarkMode == true)
+            {
+                this.BackColor = Color.FromArgb(32, 32, 32);
+
+                foreach (var control in this.Controls)
+                {
+                    if (control is Label)
+                    {
+                        ((Label)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((Label)control).ForeColor = Color.White;
+                    }
+                    else if (control is TextBox)
+                    {
+                        ((TextBox)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((TextBox)control).ForeColor = Color.White;
+                    }
+                    else if (control is Button)
+                    {
+                        ((Button)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((Button)control).ForeColor = Color.White;
+                    }
+                    else if (control is CheckBox)
+                    {
+                        ((CheckBox)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((CheckBox)control).ForeColor = Color.White;
+                    }
+                    else if (control is RadioButton)
+                    {
+                        ((RadioButton)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((RadioButton)control).ForeColor = Color.White;
+                    }
+                    else if (control is ListBox)
+                    {
+                        ((ListBox)control).BackColor = Color.FromArgb(32, 32, 32);
+
+                        ((ListBox)control).ForeColor = Color.White;
+                    }
                 }
             }
         }

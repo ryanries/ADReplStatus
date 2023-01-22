@@ -136,6 +136,7 @@
             this.Controls.Add(this.results_label);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Name = "PortTester";
+            this.Load += new System.EventHandler(this.PortTester_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

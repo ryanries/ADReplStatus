@@ -146,6 +146,7 @@
             this.LastSyncResultColumn,
             this.LastSyncMessageColumn});
             this.treeListView1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.treeListView1.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.treeListView1.HideSelection = false;
             this.treeListView1.Location = new System.Drawing.Point(12, 68);
             this.treeListView1.Name = "treeListView1";
