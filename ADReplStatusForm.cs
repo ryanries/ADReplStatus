@@ -545,6 +545,7 @@ namespace ADReplStatus
             {
                 using (var dialog = new Form())
                 {
+
                     dialog.Text = "Ping Test";
                     dialog.StartPosition = FormStartPosition.CenterParent;
                     dialog.MaximizeBox = false;
@@ -575,6 +576,44 @@ namespace ADReplStatus
                     dialog.Controls.Add(ipv4Button);
                     dialog.Controls.Add(ipv6Button);
                     dialog.Controls.Add(statusTextBox);
+
+                    if (ADReplStatusForm.gDarkMode == true)
+                    {
+                        dialog.BackColor = Color.FromArgb(32, 32, 32);
+                        foreach (var control in dialog.Controls)
+                        {
+                            if (control is Label)
+                            {
+                                ((Label)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((Label)control).ForeColor = Color.White;
+                            }
+                            else if (control is TextBox)
+                            {
+                                ((TextBox)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((TextBox)control).ForeColor = Color.White;
+                            }
+                            else if (control is Button)
+                            {
+                                ((Button)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((Button)control).ForeColor = Color.White;
+                            }
+                            else if (control is CheckBox)
+                            {
+                                ((CheckBox)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((CheckBox)control).ForeColor = Color.White;
+                            }
+                            else if (control is RadioButton)
+                            {
+                                ((RadioButton)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((RadioButton)control).ForeColor = Color.White;
+                            }
+                            else if (control is ListBox)
+                            {
+                                ((ListBox)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((ListBox)control).ForeColor = Color.White;
+                            }
+                        }
+                    }
 
                     dialog.ShowDialog(this);
                 }
