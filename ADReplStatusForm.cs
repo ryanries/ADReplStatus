@@ -17,6 +17,8 @@ using System.Net.NetworkInformation;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Net.Sockets;
+using System.Net;
 
 namespace ADReplStatus
 {
@@ -538,36 +540,141 @@ namespace ADReplStatus
         private void diagnosticPing(object sender, ToolStripItemClickedEventArgs e)
         {
             string destination = this.treeListView1.SelectedItem.Text;
-            
-            if(destination != "")
+
+            if (destination != "")
             {
-                try
+                using (var dialog = new Form())
                 {
-                    Ping p = new Ping();
-                    PingReply r;
-                    r = p.Send(destination);
-                    if (gLoggingEnabled)
+                    //Set up the ping test window
+                    dialog.Text = "Ping Test";
+                    dialog.StartPosition = FormStartPosition.CenterParent;
+                    dialog.MaximizeBox = false;
+                    dialog.MinimizeBox = false;
+                    dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+                    dialog.ShowInTaskbar = false;
+                    dialog.Width = 290;
+                    dialog.Height = 150;
+
+                    var ipv4Button = new Button();
+                    ipv4Button.Text = "IPv4";
+                    ipv4Button.Location = new Point(10, 20);
+                    ipv4Button.Click += (s, ev) => RunPing(destination, AddressFamily.InterNetwork, dialog);
+
+                    var ipv6Button = new Button();
+                    ipv6Button.Text = "IPv6";
+                    ipv6Button.Location = new Point(180, 20);
+                    ipv6Button.Click += (s, ev) => RunPing(destination, AddressFamily.InterNetworkV6, dialog);
+
+                    var statusTextBox = new TextBox();
+                    statusTextBox.Multiline = true;
+                    statusTextBox.ReadOnly = true;
+                    statusTextBox.Location = new Point(10, 60);
+                    statusTextBox.Width = dialog.Width - 45;
+                    statusTextBox.Height = dialog.Height - 110;
+                    statusTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right;
+
+                    dialog.Controls.Add(ipv4Button);
+                    dialog.Controls.Add(ipv6Button);
+                    dialog.Controls.Add(statusTextBox);
+
+                    //Add support for dark mode
+                    if (ADReplStatusForm.gDarkMode == true)
                     {
-                        System.IO.File.AppendAllText(gLogfileName, $"[{DateTime.Now}] Ping to {this.treeListView1.SelectedItem.Text}\nIPAddress:{r.Address.ToString()} is successful!\n");
+                        dialog.BackColor = Color.FromArgb(32, 32, 32);
+                        foreach (var control in dialog.Controls)
+                        {
+                            if (control is Label)
+                            {
+                                ((Label)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((Label)control).ForeColor = Color.White;
+                            }
+                            else if (control is TextBox)
+                            {
+                                ((TextBox)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((TextBox)control).ForeColor = Color.White;
+                            }
+                            else if (control is Button)
+                            {
+                                ((Button)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((Button)control).ForeColor = Color.White;
+                            }
+                            else if (control is CheckBox)
+                            {
+                                ((CheckBox)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((CheckBox)control).ForeColor = Color.White;
+                            }
+                            else if (control is RadioButton)
+                            {
+                                ((RadioButton)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((RadioButton)control).ForeColor = Color.White;
+                            }
+                            else if (control is ListBox)
+                            {
+                                ((ListBox)control).BackColor = Color.FromArgb(32, 32, 32);
+                                ((ListBox)control).ForeColor = Color.White;
+                            }
+                        }
                     }
 
-                    string successMessage = $"Success:\nDCName: {this.treeListView1.SelectedItem.Text}\nIPAddress: {r.Address.ToString()}\nProtocol: ICMP";
-
-                    new Thread(() => System.Windows.Forms.MessageBox.Show(successMessage, "Ping Successful", MessageBoxButtons.OK, MessageBoxIcon.Information)).Start();
-                }
-                catch (Exception ex)
-                {
-                    string errorMessage = $"ERROR: Ping to {this.treeListView1.SelectedItem.Text} failed!\n{ex.Message}\n";
-
-                    new Thread(() => System.Windows.Forms.MessageBox.Show(errorMessage, "Ping Successful", MessageBoxButtons.OK, MessageBoxIcon.Information)).Start();
-
-                    if (gLoggingEnabled)
-                    {
-                        System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}\n");
-                    }
+                    dialog.ShowDialog(this);
                 }
             }
         }
+
+
+        private async void RunPing(string destination, AddressFamily addressFamily, Form dialog)
+        {
+            try
+            {
+                IPAddress address;
+                if (!IPAddress.TryParse(destination, out address))
+                {
+                    var entry = await Dns.GetHostEntryAsync(destination);
+                    address = entry.AddressList.FirstOrDefault(a => a.AddressFamily == addressFamily);
+                    if (address == null)
+                    {
+                        throw new Exception($"No {addressFamily} address found for {destination}");
+                    }
+                }
+
+                using (var p = new Ping())
+                {
+                    var reply = await p.SendPingAsync(address, 5000, new byte[1], new PingOptions(64, true));
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        string protocol = addressFamily == AddressFamily.InterNetwork ? "IPv4" : "IPv6";
+                        string successMessage = $"Success:\nDCName: {destination} ({reply.Address.ToString()})\nProtocol: {protocol}";
+                        var statusTextBox = (TextBox)dialog.Controls[2];
+                        statusTextBox.Clear();
+                        statusTextBox.AppendText($"Ping to {destination} using {protocol} ({reply.Address.ToString()}) successful.\n");
+
+                        if (gLoggingEnabled)
+                        {
+                            System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {statusTextBox.Text}");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception(reply.Status.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                dialog.Invoke(new Action(() =>
+                {
+                    string errorMessage = $"Ping failed!\n{ex.Message}\n";
+                    var statusTextBox = (TextBox)dialog.Controls[2];
+                    statusTextBox.Clear();
+                    statusTextBox.AppendText($"{errorMessage}\n");
+                    if (gLoggingEnabled)
+                    {
+                        System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}");
+                    }
+                }));
+            }
+        }
+
 
         private void diagnosticRdp(object sender, ToolStripItemClickedEventArgs e)
         {
