@@ -17,6 +17,8 @@ using System.Net.NetworkInformation;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Net.Sockets;
+using System.Net;
 
 namespace ADReplStatus
 {
@@ -538,36 +540,100 @@ namespace ADReplStatus
         private void diagnosticPing(object sender, ToolStripItemClickedEventArgs e)
         {
             string destination = this.treeListView1.SelectedItem.Text;
-            
-            if(destination != "")
+
+            if (destination != "")
             {
-                try
+                using (var dialog = new Form())
                 {
-                    Ping p = new Ping();
-                    PingReply r;
-                    r = p.Send(destination);
-                    if (gLoggingEnabled)
-                    {
-                        System.IO.File.AppendAllText(gLogfileName, $"[{DateTime.Now}] Ping to {this.treeListView1.SelectedItem.Text}\nIPAddress:{r.Address.ToString()} is successful!\n");
-                    }
+                    dialog.Text = "Ping Test";
+                    dialog.StartPosition = FormStartPosition.CenterParent;
+                    dialog.MaximizeBox = false;
+                    dialog.MinimizeBox = false;
+                    dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+                    dialog.ShowInTaskbar = false;
+                    dialog.Width = 290;
+                    dialog.Height = 150;
 
-                    string successMessage = $"Success:\nDCName: {this.treeListView1.SelectedItem.Text}\nIPAddress: {r.Address.ToString()}\nProtocol: ICMP";
+                    var ipv4Button = new Button();
+                    ipv4Button.Text = "IPv4";
+                    ipv4Button.Location = new Point(10, 20);
+                    ipv4Button.Click += (s, ev) => RunPing(destination, AddressFamily.InterNetwork, dialog);
 
-                    new Thread(() => System.Windows.Forms.MessageBox.Show(successMessage, "Ping Successful", MessageBoxButtons.OK, MessageBoxIcon.Information)).Start();
+                    var ipv6Button = new Button();
+                    ipv6Button.Text = "IPv6";
+                    ipv6Button.Location = new Point(180, 20);
+                    ipv6Button.Click += (s, ev) => RunPing(destination, AddressFamily.InterNetworkV6, dialog);
+
+                    var statusTextBox = new TextBox();
+                    statusTextBox.Multiline = true;
+                    statusTextBox.ReadOnly = true;
+                    statusTextBox.Location = new Point(10, 60);
+                    statusTextBox.Width = dialog.Width - 45;
+                    statusTextBox.Height = dialog.Height - 110;
+                    statusTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right;
+
+                    dialog.Controls.Add(ipv4Button);
+                    dialog.Controls.Add(ipv6Button);
+                    dialog.Controls.Add(statusTextBox);
+
+                    dialog.ShowDialog(this);
                 }
-                catch (Exception ex)
+            }
+        }
+
+
+        private async void RunPing(string destination, AddressFamily addressFamily, Form dialog)
+        {
+            try
+            {
+                IPAddress address;
+                if (!IPAddress.TryParse(destination, out address))
                 {
-                    string errorMessage = $"ERROR: Ping to {this.treeListView1.SelectedItem.Text} failed!\n{ex.Message}\n";
+                    var entry = await Dns.GetHostEntryAsync(destination);
+                    address = entry.AddressList.FirstOrDefault(a => a.AddressFamily == addressFamily);
+                    if (address == null)
+                    {
+                        throw new Exception($"No {addressFamily} address found for {destination}");
+                    }
+                }
 
-                    new Thread(() => System.Windows.Forms.MessageBox.Show(errorMessage, "Ping Successful", MessageBoxButtons.OK, MessageBoxIcon.Information)).Start();
+                using (var p = new Ping())
+                {
+                    var reply = await p.SendPingAsync(address, 5000, new byte[1], new PingOptions(64, true));
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        string protocol = addressFamily == AddressFamily.InterNetwork ? "IPv4" : "IPv6";
+                        string successMessage = $"Success:\nDCName: {destination} ({reply.Address.ToString()})\nProtocol: {protocol}";
+                        var statusTextBox = (TextBox)dialog.Controls[2];
+                        statusTextBox.Clear();
+                        statusTextBox.AppendText($"Ping to {destination} using {protocol} ({reply.Address.ToString()}) successful.\n");
 
+                        if (gLoggingEnabled)
+                        {
+                            System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {statusTextBox.Text}");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception(reply.Status.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                dialog.Invoke(new Action(() =>
+                {
+                    string errorMessage = $"ERROR: Ping to {destination} failed!\n{ex.Message}\n";
+                    var statusTextBox = (TextBox)dialog.Controls[2];
+                    statusTextBox.AppendText($"{DateTime.Now}: {errorMessage}\n");
                     if (gLoggingEnabled)
                     {
                         System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}\n");
                     }
-                }
+                }));
             }
         }
+
 
         private void diagnosticRdp(object sender, ToolStripItemClickedEventArgs e)
         {
