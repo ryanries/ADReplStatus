@@ -177,16 +177,16 @@ namespace ADReplStatus
                             selectedPort = ldapSSLPort;
                             break;
                         case "Domain Name Service":
-                            selectedPort = globalCatalogLDAPPort;
+                            selectedPort = dnsPort;
                             break;
                         case "Global Catalog LDAP":
-                            selectedPort = globalCatalogLDAPSSLPort;
+                            selectedPort = globalCatalogLDAPPort;
                             break;
                         case "Global Catalog LDAP SSL":
-                            selectedPort = kerberosPort;
+                            selectedPort = globalCatalogLDAPSSLPort;
                             break;
                         case "Kerberos authentication":
-                            selectedPort = dnsPort;
+                            selectedPort = kerberosPort;
                             break;
                         case "SMB, NetLogon, SamR":
                             selectedPort = smbPort;
