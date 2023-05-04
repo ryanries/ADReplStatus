@@ -545,7 +545,7 @@ namespace ADReplStatus
             {
                 using (var dialog = new Form())
                 {
-
+                    //Set up the ping test window
                     dialog.Text = "Ping Test";
                     dialog.StartPosition = FormStartPosition.CenterParent;
                     dialog.MaximizeBox = false;
@@ -577,6 +577,7 @@ namespace ADReplStatus
                     dialog.Controls.Add(ipv6Button);
                     dialog.Controls.Add(statusTextBox);
 
+                    //Add support for dark mode
                     if (ADReplStatusForm.gDarkMode == true)
                     {
                         dialog.BackColor = Color.FromArgb(32, 32, 32);
@@ -662,12 +663,13 @@ namespace ADReplStatus
             {
                 dialog.Invoke(new Action(() =>
                 {
-                    string errorMessage = $"ERROR: Ping to {destination} failed!\n{ex.Message}\n";
+                    string errorMessage = $"Ping failed!\n{ex.Message}\n";
                     var statusTextBox = (TextBox)dialog.Controls[2];
-                    statusTextBox.AppendText($"{DateTime.Now}: {errorMessage}\n");
+                    statusTextBox.Clear();
+                    statusTextBox.AppendText($"{errorMessage}\n");
                     if (gLoggingEnabled)
                     {
-                        System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}\n");
+                        System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] {errorMessage}");
                     }
                 }));
             }
