@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ADReplStatusForm));
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.SetDcButton = new System.Windows.Forms.Button();
             this.ProgressPercentLabel = new System.Windows.Forms.Label();
             this.treeListView1 = new BrightIdeasSoftware.TreeListView();
             this.DCNameColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -46,7 +47,6 @@
             this.LastSuccessfulSyncColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.LastSyncResultColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.LastSyncMessageColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.SetDcButton = new System.Windows.Forms.Button();
             this.DarkModeButton = new System.Windows.Forms.Button();
             this.ErrorsOnlyButton = new System.Windows.Forms.Button();
             this.AlternateCredsButton = new System.Windows.Forms.Button();
@@ -62,6 +62,18 @@
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // SetDcButton
+            // 
+            this.SetDcButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.SetDcButton.Image = ((System.Drawing.Image)(resources.GetObject("SetDcButton.Image")));
+            this.SetDcButton.Location = new System.Drawing.Point(180, 12);
+            this.SetDcButton.Name = "SetDcButton";
+            this.SetDcButton.Size = new System.Drawing.Size(50, 50);
+            this.SetDcButton.TabIndex = 12;
+            this.toolTip1.SetToolTip(this.SetDcButton, "Specify a domain controller for forest discovery");
+            this.SetDcButton.UseVisualStyleBackColor = true;
+            this.SetDcButton.Click += new System.EventHandler(this.SetDcButton_Click);
             // 
             // ProgressPercentLabel
             // 
@@ -191,18 +203,6 @@
             this.LastSyncMessageColumn.FillsFreeSpace = true;
             this.LastSyncMessageColumn.Text = "Last Sync Message";
             this.LastSyncMessageColumn.Width = 120;
-            // 
-            // SetDcButton
-            // 
-            this.SetDcButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.SetDcButton.Image = ((System.Drawing.Image)(resources.GetObject("SetDcButton.Image")));
-            this.SetDcButton.Location = new System.Drawing.Point(180, 12);
-            this.SetDcButton.Name = "SetDcButton";
-            this.SetDcButton.Size = new System.Drawing.Size(50, 50);
-            this.SetDcButton.TabIndex = 12;
-            this.toolTip1.SetToolTip(this.SetDcButton, "Specify a domain controller target.");
-            this.SetDcButton.UseVisualStyleBackColor = true;
-            this.SetDcButton.Click += new System.EventHandler(this.SetDcButton_Click);
             // 
             // DarkModeButton
             // 
