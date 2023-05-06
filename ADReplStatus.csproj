@@ -82,6 +82,12 @@
     <Compile Include="AlternateCredsForm.Designer.cs">
       <DependentUpon>AlternateCredsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SetUserDomainControllerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetUserDomainControllerForm.Designer.cs">
+      <DependentUpon>SetUserDomainControllerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PortTester.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +107,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AlternateCredsForm.resx">
       <DependentUpon>AlternateCredsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetUserDomainControllerForm.resx">
+      <DependentUpon>SetUserDomainControllerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PortTester.resx">
       <DependentUpon>PortTester.cs</DependentUpon>

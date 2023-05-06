@@ -40,6 +40,10 @@ namespace ADReplStatus
 
         public static string gTarget = string.Empty;
 
+        //Added to allow user controlled DC selection
+        public static bool gUseUserDomainController = false;
+        public static string gUserDomainController = string.Empty;
+
         public static List<ADREPLDC> gDCs = new List<ADREPLDC>();
         
         public ADReplStatusForm()
@@ -146,25 +150,67 @@ namespace ADReplStatus
             {
                 DirectoryContext ForestContext = null;
 
-                if (gUsername.Length > 0)
+                if(gUseUserDomainController)
                 {
-                    backgroundWorker1.ReportProgress(0, $"Attempting to connect to forest {gForestName} with alternate user {gUsername}.");
+                    if (gLoggingEnabled)
+                    {
+                       System.IO.File.AppendAllText(gLogfileName, $"[{DateTime.Now}] Attempting forest discovery against user specified domain controller {gUserDomainController}\n");
+                    }
 
-                    ForestContext = new DirectoryContext(DirectoryContextType.Forest, gForestName, gUsername, gPassword);
+                    DirectoryEntry entry = null;
+                    if (gUsername.Length > 0)
+                    {
+                        backgroundWorker1.ReportProgress(0, $"Attempting to connect to forest {gForestName} with alternate user {gUsername}.");
+
+                        entry = new DirectoryEntry($"LDAP://{gUserDomainController}/RootDSE", gUsername, gPassword);
+
+                        //Issues a check and throws an exception if the user specified DC does not exist. 
+                        var configNamingContext = entry.Properties["configurationNamingContext"].Value;
+
+                        ForestContext = new DirectoryContext(DirectoryContextType.Forest, gForestName, gUsername, gPassword);
+                    }
+                    else
+                    {
+                        backgroundWorker1.ReportProgress(0, $"Attempting to connect to forest {gForestName} as currently logged-on user.");
+
+                        entry = new DirectoryEntry($"LDAP://{gUserDomainController}/RootDSE");
+
+                        //Issues a check and throws an exception if the user specified DC does not exist. 
+                        var configNamingContext = entry.Properties["configurationNamingContext"].Value;
+
+                        ForestContext = new DirectoryContext(DirectoryContextType.Forest, gForestName);
+                    }
+
+                    forest = Forest.GetForest(ForestContext);
                 }
-                else 
+                else
                 {
-                    backgroundWorker1.ReportProgress(0, $"Attempting to connect to forest {gForestName} as currently logged-on user.");
+                    if (gUsername.Length > 0)
+                    {
+                        backgroundWorker1.ReportProgress(0, $"Attempting to connect to forest {gForestName} with alternate user {gUsername}.");
 
-                    ForestContext = new DirectoryContext(DirectoryContextType.Forest, gForestName);
-                }
+                        ForestContext = new DirectoryContext(DirectoryContextType.Forest, gForestName, gUsername, gPassword);
+                    }
+                    else
+                    {
+                        backgroundWorker1.ReportProgress(0, $"Attempting to connect to forest {gForestName} as currently logged-on user.");
 
-                forest = Forest.GetForest(ForestContext);               
+                        ForestContext = new DirectoryContext(DirectoryContextType.Forest, gForestName);
+                    }
+
+                    forest = Forest.GetForest(ForestContext);
+                }            
             }
             catch (Exception ex)
             {
-                backgroundWorker1.ReportProgress(0, $"ERROR:Unable to find AD forest:{gForestName}\n{ex.Message}\n\nYou probably need to manually enter the forest using the button.");
-
+                if(gUseUserDomainController)
+                {
+                    backgroundWorker1.ReportProgress(0, $"ERROR:Unable to find AD forest:{gForestName}\nUsing user specified target domain controller:{gUserDomainController}\n{ex.Message}\n");
+                }
+                else
+                {
+                    backgroundWorker1.ReportProgress(0, $"ERROR:Unable to find AD forest:{gForestName}\n{ex.Message}\n\nYou probably need to manually enter the forest using the button.");
+                }
                 return;
             }
 
@@ -523,6 +569,10 @@ namespace ADReplStatus
             switch(e.ClickedItem.ToString())
             {
                 case "Ping":
+                    if (ADReplStatusForm.gLoggingEnabled)
+                    {
+                        System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] Diagnostic ping menu opened.\n");
+                    }
                     diagnosticPing(sender, e);
                     break;
                 case "Initiate RDP connection":
@@ -680,6 +730,11 @@ namespace ADReplStatus
         {
             try
             {
+                if (ADReplStatusForm.gLoggingEnabled)
+                {
+                    System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] Initiating RDP connection to {this.treeListView1.SelectedItem.Text}.\n");
+                }
+
                 string args = $"/v {this.treeListView1.SelectedItem.Text}";
                 Process.Start($"mstsc.exe", args);
             }
@@ -701,6 +756,10 @@ namespace ADReplStatus
             
             try
             {
+                if (ADReplStatusForm.gLoggingEnabled)
+                {
+                    System.IO.File.AppendAllText(ADReplStatusForm.gLogfileName, $"[{DateTime.Now}] Initiating remote powershell session to {this.treeListView1.SelectedItem.Text}.\n");
+                }
                 string powershellArgs = $"-NoExit $Cred = Get-Credential;Enter-PSSession -ComputerName {this.treeListView1.SelectedItem.Text} -Credential $Cred";
                 Process.Start($"powershell.exe", powershellArgs);
             }
@@ -865,6 +924,20 @@ namespace ADReplStatus
 
                 item.HeaderFormatStyle = headerstyle;
             }
+        }
+
+        private void SetDcButton_Click(object sender, EventArgs e)
+        {
+            SetUserDomainControllerForm setUserDCForm = new SetUserDomainControllerForm();
+
+            if (gLoggingEnabled)
+            {
+                System.IO.File.AppendAllText(gLogfileName, $"[{DateTime.Now}] SetUserDomainController button was clicked.\n");
+            }
+
+            setUserDCForm.ShowDialog();
+
+            setUserDCForm.Dispose();
         }
     }
 

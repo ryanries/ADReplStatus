@@ -30,12 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ADReplStatusForm));
-            this.RefreshButton = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.EnableLoggingButton = new System.Windows.Forms.Button();
-            this.SetForestButton = new System.Windows.Forms.Button();
-            this.AlternateCredsButton = new System.Windows.Forms.Button();
             this.ProgressPercentLabel = new System.Windows.Forms.Label();
             this.treeListView1 = new BrightIdeasSoftware.TreeListView();
             this.DCNameColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -50,21 +46,15 @@
             this.LastSuccessfulSyncColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.LastSyncResultColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.LastSyncMessageColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.ErrorsOnlyButton = new System.Windows.Forms.Button();
+            this.SetDcButton = new System.Windows.Forms.Button();
             this.DarkModeButton = new System.Windows.Forms.Button();
+            this.ErrorsOnlyButton = new System.Windows.Forms.Button();
+            this.AlternateCredsButton = new System.Windows.Forms.Button();
+            this.SetForestButton = new System.Windows.Forms.Button();
+            this.EnableLoggingButton = new System.Windows.Forms.Button();
+            this.RefreshButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.treeListView1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // RefreshButton
-            // 
-            this.RefreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.RefreshButton.Image = ((System.Drawing.Image)(resources.GetObject("RefreshButton.Image")));
-            this.RefreshButton.Location = new System.Drawing.Point(12, 12);
-            this.RefreshButton.Name = "RefreshButton";
-            this.RefreshButton.Size = new System.Drawing.Size(50, 50);
-            this.RefreshButton.TabIndex = 0;
-            this.RefreshButton.UseVisualStyleBackColor = true;
-            this.RefreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
             // 
             // backgroundWorker1
             // 
@@ -72,39 +62,6 @@
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
-            // 
-            // EnableLoggingButton
-            // 
-            this.EnableLoggingButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.EnableLoggingButton.Image = ((System.Drawing.Image)(resources.GetObject("EnableLoggingButton.Image")));
-            this.EnableLoggingButton.Location = new System.Drawing.Point(348, 12);
-            this.EnableLoggingButton.Name = "EnableLoggingButton";
-            this.EnableLoggingButton.Size = new System.Drawing.Size(50, 50);
-            this.EnableLoggingButton.TabIndex = 3;
-            this.EnableLoggingButton.UseVisualStyleBackColor = true;
-            this.EnableLoggingButton.Click += new System.EventHandler(this.EnableLoggingButton_Click);
-            // 
-            // SetForestButton
-            // 
-            this.SetForestButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.SetForestButton.Image = ((System.Drawing.Image)(resources.GetObject("SetForestButton.Image")));
-            this.SetForestButton.Location = new System.Drawing.Point(124, 12);
-            this.SetForestButton.Name = "SetForestButton";
-            this.SetForestButton.Size = new System.Drawing.Size(50, 50);
-            this.SetForestButton.TabIndex = 4;
-            this.SetForestButton.UseVisualStyleBackColor = true;
-            this.SetForestButton.Click += new System.EventHandler(this.SetForestButton_Click);
-            // 
-            // AlternateCredsButton
-            // 
-            this.AlternateCredsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.AlternateCredsButton.Image = ((System.Drawing.Image)(resources.GetObject("AlternateCredsButton.Image")));
-            this.AlternateCredsButton.Location = new System.Drawing.Point(180, 12);
-            this.AlternateCredsButton.Name = "AlternateCredsButton";
-            this.AlternateCredsButton.Size = new System.Drawing.Size(50, 50);
-            this.AlternateCredsButton.TabIndex = 6;
-            this.AlternateCredsButton.UseVisualStyleBackColor = true;
-            this.AlternateCredsButton.Click += new System.EventHandler(this.AlternateCredsButton_Click);
             // 
             // ProgressPercentLabel
             // 
@@ -235,33 +192,90 @@
             this.LastSyncMessageColumn.Text = "Last Sync Message";
             this.LastSyncMessageColumn.Width = 120;
             // 
-            // ErrorsOnlyButton
+            // SetDcButton
             // 
-            this.ErrorsOnlyButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ErrorsOnlyButton.Image = ((System.Drawing.Image)(resources.GetObject("ErrorsOnlyButton.Image")));
-            this.ErrorsOnlyButton.Location = new System.Drawing.Point(236, 12);
-            this.ErrorsOnlyButton.Name = "ErrorsOnlyButton";
-            this.ErrorsOnlyButton.Size = new System.Drawing.Size(50, 50);
-            this.ErrorsOnlyButton.TabIndex = 10;
-            this.ErrorsOnlyButton.UseVisualStyleBackColor = true;
-            this.ErrorsOnlyButton.Click += new System.EventHandler(this.ErrorsOnlyButton_Click);
+            this.SetDcButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.SetDcButton.Image = ((System.Drawing.Image)(resources.GetObject("SetDcButton.Image")));
+            this.SetDcButton.Location = new System.Drawing.Point(180, 12);
+            this.SetDcButton.Name = "SetDcButton";
+            this.SetDcButton.Size = new System.Drawing.Size(50, 50);
+            this.SetDcButton.TabIndex = 12;
+            this.toolTip1.SetToolTip(this.SetDcButton, "Specify a domain controller target.");
+            this.SetDcButton.UseVisualStyleBackColor = true;
+            this.SetDcButton.Click += new System.EventHandler(this.SetDcButton_Click);
             // 
             // DarkModeButton
             // 
             this.DarkModeButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.DarkModeButton.Image = ((System.Drawing.Image)(resources.GetObject("DarkModeButton.Image")));
-            this.DarkModeButton.Location = new System.Drawing.Point(292, 12);
+            this.DarkModeButton.Location = new System.Drawing.Point(348, 12);
             this.DarkModeButton.Name = "DarkModeButton";
             this.DarkModeButton.Size = new System.Drawing.Size(50, 50);
             this.DarkModeButton.TabIndex = 11;
             this.DarkModeButton.UseVisualStyleBackColor = true;
             this.DarkModeButton.Click += new System.EventHandler(this.DarkModeButton_Click);
             // 
+            // ErrorsOnlyButton
+            // 
+            this.ErrorsOnlyButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ErrorsOnlyButton.Image = ((System.Drawing.Image)(resources.GetObject("ErrorsOnlyButton.Image")));
+            this.ErrorsOnlyButton.Location = new System.Drawing.Point(292, 12);
+            this.ErrorsOnlyButton.Name = "ErrorsOnlyButton";
+            this.ErrorsOnlyButton.Size = new System.Drawing.Size(50, 50);
+            this.ErrorsOnlyButton.TabIndex = 10;
+            this.ErrorsOnlyButton.UseVisualStyleBackColor = true;
+            this.ErrorsOnlyButton.Click += new System.EventHandler(this.ErrorsOnlyButton_Click);
+            // 
+            // AlternateCredsButton
+            // 
+            this.AlternateCredsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.AlternateCredsButton.Image = ((System.Drawing.Image)(resources.GetObject("AlternateCredsButton.Image")));
+            this.AlternateCredsButton.Location = new System.Drawing.Point(236, 12);
+            this.AlternateCredsButton.Name = "AlternateCredsButton";
+            this.AlternateCredsButton.Size = new System.Drawing.Size(50, 50);
+            this.AlternateCredsButton.TabIndex = 6;
+            this.AlternateCredsButton.UseVisualStyleBackColor = true;
+            this.AlternateCredsButton.Click += new System.EventHandler(this.AlternateCredsButton_Click);
+            // 
+            // SetForestButton
+            // 
+            this.SetForestButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.SetForestButton.Image = ((System.Drawing.Image)(resources.GetObject("SetForestButton.Image")));
+            this.SetForestButton.Location = new System.Drawing.Point(124, 12);
+            this.SetForestButton.Name = "SetForestButton";
+            this.SetForestButton.Size = new System.Drawing.Size(50, 50);
+            this.SetForestButton.TabIndex = 4;
+            this.SetForestButton.UseVisualStyleBackColor = true;
+            this.SetForestButton.Click += new System.EventHandler(this.SetForestButton_Click);
+            // 
+            // EnableLoggingButton
+            // 
+            this.EnableLoggingButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.EnableLoggingButton.Image = ((System.Drawing.Image)(resources.GetObject("EnableLoggingButton.Image")));
+            this.EnableLoggingButton.Location = new System.Drawing.Point(404, 12);
+            this.EnableLoggingButton.Name = "EnableLoggingButton";
+            this.EnableLoggingButton.Size = new System.Drawing.Size(50, 50);
+            this.EnableLoggingButton.TabIndex = 3;
+            this.EnableLoggingButton.UseVisualStyleBackColor = true;
+            this.EnableLoggingButton.Click += new System.EventHandler(this.EnableLoggingButton_Click);
+            // 
+            // RefreshButton
+            // 
+            this.RefreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.RefreshButton.Image = ((System.Drawing.Image)(resources.GetObject("RefreshButton.Image")));
+            this.RefreshButton.Location = new System.Drawing.Point(12, 12);
+            this.RefreshButton.Name = "RefreshButton";
+            this.RefreshButton.Size = new System.Drawing.Size(50, 50);
+            this.RefreshButton.TabIndex = 0;
+            this.RefreshButton.UseVisualStyleBackColor = true;
+            this.RefreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
+            // 
             // ADReplStatusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 461);
+            this.Controls.Add(this.SetDcButton);
             this.Controls.Add(this.DarkModeButton);
             this.Controls.Add(this.ErrorsOnlyButton);
             this.Controls.Add(this.treeListView1);
@@ -305,6 +319,7 @@
         private BrightIdeasSoftware.OLVColumn LastSyncMessageColumn;
         private System.Windows.Forms.Button ErrorsOnlyButton;
         private System.Windows.Forms.Button DarkModeButton;
+        private System.Windows.Forms.Button SetDcButton;
     }
 }
 
